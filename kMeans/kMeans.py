@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+# 加载数据
 def loadDataSet(filename):
 	dataSet = []
 
