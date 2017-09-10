@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
 import numpy as np
 
 # plt.plot([2, 3, 4, 5], [4, 5, 6, 7], 'r-')
@@ -73,18 +74,64 @@ import numpy as np
 
 # plt.show()
 
-ax = plt.subplot(111)
+# ax = plt.subplot(111)
 
-t = np.arange(0.0, 5.0, 0.01)
-s = np.cos(2 * np.pi * t)
+# t = np.arange(0.0, 5.0, 0.01)
+# s = np.cos(2 * np.pi * t)
 
-line, = plt.plot(t, s, lw=2)
+# line, = plt.plot(t, s, lw=2)
 
-plt.annotate('local max', xy=(2, 1), xytext=(3, 1.5),
-	arrowprops=dict(facecolor='black', shrink=0.05),
-	)
+# plt.annotate('local max', xy=(2, 1), xytext=(3, 1.5),
+# 	arrowprops=dict(facecolor='black', shrink=0.05),
+# 	)
 
-plt.ylim(-2, 2)
-# plt.axis([0, 5, -2, 2])
+# plt.ylim(-2, 2)
+# # plt.axis([0, 5, -2, 2])
 
+# plt.show()
+
+from scipy import misc
+def rgb2gray(rgb):
+	return np.dot(rgb[..., :3], [0.299, 0.587, 0.114])
+
+seven = mpimg.imread('seven.jpg')
+# plt.axis('off')
+
+# plt.imshow(seven)
+# plt.show()
+
+# seven_gray = rgb2gray(seven)
+# seven_32 = misc.imresize(seven, 0.025)
+
+# plt.imshow(seven_32)
+# plt.show()
+# print(seven_32.shape)
+
+# figure = plt.figure()
+# ax = figure.add_subplot(111)
+# ax.axis([0.0, 32.0, 0.0, 32.0])
+
+
+seven_32 = mpimg.imread('seven_32.jpg')
+# plt.imshow(seven_32)
+# plt.show()
+
+figure = plt.figure()
+ax = figure.add_subplot(111)
+ax.axis([0, 32, 0, 32])
+
+c = 0
+
+for i in range(32):
+	for j in range(32):
+		if sum(seven_32[i, j, :]) <= 750:
+			c += 1
+			# print(sum(seven_32[i, j, :]))
+			# print(seven_32[i, j, :])
+			print(i, j)
+			ax.plot(j, 32 - i, 'ro')
+		else:
+			ax.plot(j, 32 - i, 'ko')
+
+print('totla %d' % c)
 plt.show()
