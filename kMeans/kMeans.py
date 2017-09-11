@@ -50,9 +50,11 @@ def plotData(dataSet):
 
 
 if __name__ == '__main__':
-    dataSet = loadDataSet('C:\\Users\\COLDPLAY\\Desktop\\GitHub\\MachineLearningAC\\KMeans\\testSet.txt')
-    kMeans(dataSet, 4)
-    # plotData(dataSet)
+    dataSet = loadDataSet('testSet.txt')
+    # kMeans(dataSet, 4)
+    plotData(dataSet)
+
+    print(dataSet)
 
     # a = np.mat([[1, 2, 3], [4, 5, 6]])
     # b = np.mat([[1, 2, 3], [4, 5, 7]])
