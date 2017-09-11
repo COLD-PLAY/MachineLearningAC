@@ -9,8 +9,11 @@ def loadDataSet(filename):
     fr = open(filename, 'r')
     for line in fr.readlines():
         curLine = line.strip().split('\t')
-        fltLine = map(float, curLine)
-        dataSet.append(fltLine)
+        for i in range(0, len(curLine)):
+            curLine[i] = float(curLine[i])
+
+        print(curLine)
+        dataSet.append(curLine)
 
     fr.close()
     # print(dataSet)
@@ -50,11 +53,11 @@ def plotData(dataSet):
 
 
 if __name__ == '__main__':
-    dataSet = loadDataSet('testSet.txt')
-    # kMeans(dataSet, 4)
-    plotData(dataSet)
+    dataSet = loadDataSet('kMeans/testSet.txt')
+    kMeans(dataSet, 4)
+    # plotData(dataSet)
 
-    print(dataSet)
+    # print(dataSet)
 
     # a = np.mat([[1, 2, 3], [4, 5, 6]])
     # b = np.mat([[1, 2, 3], [4, 5, 7]])
