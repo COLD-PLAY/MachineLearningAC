@@ -31,11 +31,11 @@ def trainNB0(trainMatrix, trainCategory):
 	numWords = len(trainMatrix[0])
 	pAbusive = np.sum(trainCategory)/float(numTrainDocs)
 
-	# p0Num = np.ones(numWords) ; p1Num = np.ones(numWords) # init the probablities of p0 and p1
-	# p0Denom = 2.0 ; p1Denom = 2.0
+	# p0Num = np.zeros(numWords) ; p1Num = np.ones(numWords)
+	# p0Denom = 0.0 ; p1Denom = 0.0
 
-	p0Num = np.zeros(numWords) ; p1Num = np.ones(numWords)
-	p0Denom = 0.0 ; p1Denom = 0.0
+	p0Num = np.ones(numWords) ; p1Num = np.ones(numWords) # init the probablities of p0 and p1
+	p0Denom = 2.0 ; p1Denom = 2.0
 
 	for i in range(numTrainDocs):
 		if trainCategory[i] == 1:
@@ -45,10 +45,10 @@ def trainNB0(trainMatrix, trainCategory):
 			p0Num += trainMatrix[i]
 			p0Denom += sum(trainMatrix[i])
 	
-	# p0Vect = np.log(p0Num/p0Denom)
-	# p1Vect = np.log(p1Num/p1Denom)
 	p0Vect = p0Num/p0Denom
 	p1Vect = p1Num/p1Denom
+	# p0Vect = np.log(p0Num/p0Denom)
+	# p1Vect = np.log(p1Num/p1Denom)
 	
 	return p0Vect, p1Vect, pAbusive
 
