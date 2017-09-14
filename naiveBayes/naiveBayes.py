@@ -129,7 +129,7 @@ def spamTest():
 		trainMatrix.append(bagOfWords2VecMN(vocabList, email))
 
 	p0V, p1V, pSp = trainNB0(trainMatrix, emailClasses)	
-	print(p0V, p1V, pSp)
+	# print(p0V, p1V, pSp)
 	
 	for i in range(21, 26):
 		ham = open('naiveBayes/email/ham/' + str(i) + '.txt').read()
