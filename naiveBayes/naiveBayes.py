@@ -52,21 +52,37 @@ def trainNB0(trainMatrix, trainCategory):
 	
 	return p0Vect, p1Vect, pAbusive
 
-def main():
+def classifyNB(vec2Classify, p0Vect, p1Vect, pClass1):
+	p1 = np.sum(vec2Classify * p1Vect) + np.log(pClass1)
+	p0 = np.sum(vec2Classify * p0Vect) + np.log(1.0 - pClass1)
+
+	print(p0, ' ', p1)
+
+	if p1 > p0: return 1
+	else: return 0
+
+def testingNB():
 	listOPosts, listClasses = loadDataSet()
+
 	vocabList = createVacabList(listOPosts)
-	
-	# vec = setOfWords2Vec(vocabList, ('my', 'dog', 'is', 'cute', 'very', 'cute'))
 	trainMatrix = []
 
 	for postinDoc in listOPosts:
 		trainMatrix.append(setOfWords2Vec(vocabList, postinDoc))
 	
 	p0V, p1V, pAb = trainNB0(trainMatrix, listClasses)
+	print(p0V, p1V, pAb)
 
-	print(pAb)
-	print(p0V)
-	print(p1V)
+	testEntry = ['love', 'my', 'dalmation']
+	thisDoc = np.array(setOfWords2Vec(vocabList, testEntry))
+	print(testEntry, 'classified as: ', classifyNB(thisDoc, p0V, p1V, pAb))
+
+	testEntry = ['stupid', 'garbage']
+	thisDoc = np.array(setOfWords2Vec(vocabList, testEntry))
+	print(testEntry, 'classified as: ', classifyNB(thisDoc, p0V, p1V, pAb))		
+
+def main():
+	testingNB()
 
 if __name__ == '__main__':
 	main()
