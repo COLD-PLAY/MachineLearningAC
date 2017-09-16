@@ -98,8 +98,8 @@ def plotData(dataSet, C, Mu, i = 1000):
     plt.show()
 
 if __name__ == '__main__':
-    dataSet = loadDataSet('kMeans/testSet.txt')
-    kMeans(dataSet, 2)
+    # dataSet = loadDataSet('kMeans/testSet.txt')
+    # kMeans(dataSet, 2)
     # plotData(dataSet)
 
     # print(dataSet)
@@ -109,3 +109,19 @@ if __name__ == '__main__':
     # for i in range(0, 2):
     # 	c = a[i, :] - b[i, :]
     # 	print(c)
+    
+    bino = np.random.binomial(40, 0.5, size=100)
+    # bino = sorted(bino)
+    # print(bino)
+
+    def count(num, n):
+        c = 0
+        for i in bino:
+            if num == i: c += 1
+        
+        return c / float(n)
+
+    distribution = [count(i, 40) for i in range(41)]
+    print(distribution)
+    plt.plot(distribution, 'ro')
+    plt.show()
