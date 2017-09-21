@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import re
+import feedparser
 
 def loadDataSet():
 	postingList=[['my', 'dog', 'has', 'flea', 'problems', 'help', 'please'],
@@ -42,15 +43,15 @@ def trainNB0(trainMatrix, trainCategory):
 	for i in range(numTrainDocs):
 		if trainCategory[i] > 0:
 			p1Num += trainMatrix[i]
-			p1Denom += sum(trainMatrix[i])
+			p1Denom += np.sum(trainMatrix[i])
 		else:
 			p0Num += trainMatrix[i]
-			p0Denom += sum(trainMatrix[i])
+			p0Denom += np.sum(trainMatrix[i])
 	
-	p0Vect = p0Num/p0Denom
-	p1Vect = p1Num/p1Denom
-	# p0Vect = np.log(p0Num/p0Denom)
-	# p1Vect = np.log(p1Num/p1Denom)
+	# p0Vect = p0Num/p0Denom
+	# p1Vect = p1Num/p1Denom
+	p0Vect = np.log(p0Num/p0Denom)
+	p1Vect = np.log(p1Num/p1Denom)
 	
 	return p0Vect, p1Vect, pAbusive
 
@@ -59,7 +60,7 @@ def classifyNB(vec2Classify, p0Vect, p1Vect, pClass1):
 	p1 = np.sum(vec2Classify * p1Vect) + np.log(pClass1)
 	p0 = np.sum(vec2Classify * p0Vect) + np.log(1.0 - pClass1)
 
-	print(p0, ' ', p1)
+	# print(p0, ' ', p1)
 
 	if p1 > p0: return 1
 	else: return 0
@@ -103,60 +104,131 @@ def parseTxt(bigString):
 	return words
 
 def loadEmailData():
-	emailData = []
-	for i in range(1, 21):
+	emailData = [] ; emailClasses = [] ; fullText = []
+	for i in range(1, 26):
 		content = open('naiveBayes/email/ham/' + str(i) + '.txt').read()
 		words = parseTxt(content)
 		emailData.append(words)
+		emailClasses.append(0)
+		fullText.extend(words)
 
 		content = open('naiveBayes/email/spam/' + str(i) + '.txt').read()
 		words = parseTxt(content)
 		emailData.append(words)
-	
-	emailClasses = [i%2 for i in range(40)]
-	# print(len(emailData), ' ', len(emailClasses))
+		fullText.extend(words)
+		emailClasses.append(1)
+	return emailData, emailClasses, fullText
 
-	return emailData, emailClasses
+# return the trainSet and testSet's index stochastically
+# 10 testing data(doc)
+def createTrainAndTestSet(dataSet):
+	trainSet = list(range(50)) ; testSet = []
+	# print(trainSet)
+	for i in range(10):
+		randIndex = np.random.randint(0, len(trainSet))
+		# print(randIndex)
+		testSet.append(trainSet[randIndex])
+		del(trainSet[randIndex])
+	return trainSet, testSet
 
 def spamTest():
-	emailData, emailClasses = loadEmailData()
-	vocabList = createVacabList(emailData)
+	docList, classList, fullText = loadEmailData()
+	vocabList = createVacabList(docList)
 	error = 0 ; count = 0
 
-	trainMatrix = []
-	for email in emailData:
-		# trainMatrix.append(bagOfWords2VecMN(vocabList, email))
-		trainMatrix.append(bagOfWords2VecMN(vocabList, email))
+	# get the index of trainSet and testSet
+	trainSet, testSet = createTrainAndTestSet(docList)
+	# print(trainSet, testSet)
 
-	p0V, p1V, pSp = trainNB0(trainMatrix, emailClasses)	
-	# print(p0V, p1V, pSp)
-	
-	for i in range(21, 26):
-		ham = open('naiveBayes/email/ham/' + str(i) + '.txt').read()
-		email = parseTxt(ham)
-		emailVec = np.array(bagOfWords2VecMN(vocabList, email))
-		# print(emailVec)
+	trainMatrix = [] ; trainClasses = []
+	for docIndex in trainSet:
+		trainMatrix.append(bagOfWords2VecMN(vocabList, docList[docIndex]))
+		trainClasses.append(classList[docIndex])
+
+	print(trainSet, trainClasses)
+
+	p0V, p1V, pSp = trainNB0(np.array(trainMatrix), np.array(trainClasses))	
+
+	for docIndex in testSet:
+		testMatrix = bagOfWords2VecMN(vocabList, docList[docIndex])
+
+		preRes = classifyNB(testMatrix, p0V, p1V, pSp)
+		if classList[docIndex] != preRes:
+			error += 1
 		
-		res = classifyNB(emailVec, p0V, p1V, pSp)
-		print('the %dth of ham classified as: ' % i, res)
+		count += 1
 
-		if res == 1: error += 1
+		print('the %dth doc classified as: %d, and its real class is: %d' % (docIndex, preRes, classList[docIndex]))	
+	print('the error rate is: ', error/float(count))
 
-		spam = open('naiveBayes/email/spam/' + str(i) + '.txt').read()
-		email = parseTxt(spam)
-		emailVec = np.array(bagOfWords2VecMN(vocabList, email))
+# return the top 30 words back because these have much big part for the whole TEXT!
+def	clacMostFreq(vocabList, fullText):
+	import operator
+	freqDict = {}
+	for token in vocabList:
+		freqDict[token] = fullText.count(token)
+	
+	sortedFreq = sorted(freqDict.items(), key=operator.itemgetter(1), reverse=True)
+	
+	return sortedFreq[:30]
 
-		res = classifyNB(emailVec, p0V, p1V, pSp)
-		print('the %dth of spam classified as: ' % i, res)
+# gee the wordList of feed1/0's 'summary' of entries'
+# and added it into docList returned
+def localWords(feed1, feed0):
+	docList = [] ;  classList = [] ; fullText = []
 
-		if res == 0: error += 1		
+	minLen = min(len(feed1['entries']), len(feed0['entries']))
 
-		count += 2
+	for i in range(minLen):
+		wordList = parseTxt(feed1['entries'][i]['summary'])
+		docList.append(wordList)
+		fullText.extend(wordList)
+		classList.append(1)
+		
+		wordList = parseTxt(feed0['entries'][i]['summary'])
+		docList.append(wordList)
+		fullText.extend(wordList)
+		classList.append(0)
+
+	vocabList = createVacabList(docList)
+	top30Words = clacMostFreq(vocabList, fullText)
+	# print(top30Words)
+
+	for pairW in top30Words:
+		if pairW[0] in vocabList: vocabList.remove(pairW[0])
+
+	trainingSet = list(range(2*minLen)) ; testSet = []
+
+	for i in range(20):
+		randIndex = np.random.randint(0, len(trainingSet))
+		testSet.append(trainingSet[randIndex])
+		del(trainingSet[randIndex])
+	trainMatrix = [] ; trainClasses = []
+
+	for docIndex in trainingSet:
+		trainMatrix.append(setOfWords2Vec(vocabList, docList[docIndex]))
+		trainClasses.append(classList[randIndex])
+	
+	p0V, p1V, pSpam = trainNB0(trainMatrix, trainClasses)
+	error = 0 ; count = 0
+
+	for docIndex in testSet:
+		testData = setOfWords2Vec(vocabList, docList[docIndex])
+		preRes = classifyNB(testData, p0V, p1V, pSpam)
+
+		if classList[docIndex] != preRes: error += 1
+		count += 1
+		
+		print('the %dth doc classified as: %d, and its real class is: %d' % (docIndex, preRes, classList[docIndex]))	
 	print('the error rate is: ', error/float(count))
 
 def main():
-	testingNB()
+	# testingNB()
+	# spamTest()
+	ny = feedparser.parse('https://newyork.craigslist.org/search/stp?format=rss')
+	sf = feedparser.parse('https://sfbay.craigslist.org/search/stp?format=rss')
+
+	localWords(ny, sf)
 
 if __name__ == '__main__':
-	# main()
-	spamTest()
+	main()

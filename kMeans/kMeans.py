@@ -28,12 +28,20 @@ def kMeans(dataSet, k):
     # print(Mu)
 
     C = minDis(dataSet, Mu)
+    C_ = np.zeros((m, 1))
     
-    for i in range(1000):
+    # for i in range(1000):
+    #     Mu = descent(dataSet, Mu, C)
+    #     C = minDis(dataSet, Mu)    
+
+    count = 0
+    while (C_ != C).any():
+        count += 1
+        C_ = C
         Mu = descent(dataSet, Mu, C)
         C = minDis(dataSet, Mu)    
         
-    plotData(dataSet, C, Mu)
+    plotData(dataSet, C, Mu, count)
 
 # find the optimization of Mu to make the total distance minimization
 def descent(dataSet, Mu, C):
@@ -85,7 +93,7 @@ def minDis(X, Mu):
     return C
 
 # plot the data which had been classified to k's kinds
-def plotData(dataSet, C, Mu, i = 1000):
+def plotData(dataSet, C, Mu, i=100):
     k = Mu.shape[0]
     m, n = dataSet.shape
 
@@ -98,8 +106,8 @@ def plotData(dataSet, C, Mu, i = 1000):
     plt.show()
 
 if __name__ == '__main__':
-    # dataSet = loadDataSet('kMeans/testSet.txt')
-    # kMeans(dataSet, 2)
+    dataSet = loadDataSet('kMeans/testSet.txt')
+    kMeans(dataSet, 9)
     # plotData(dataSet)
 
     # print(dataSet)
@@ -110,18 +118,18 @@ if __name__ == '__main__':
     # 	c = a[i, :] - b[i, :]
     # 	print(c)
     
-    bino = np.random.binomial(40, 0.5, size=100)
-    # bino = sorted(bino)
-    # print(bino)
+    # bino = np.random.binomial(40, 0.5, size=100)
+    # # bino = sorted(bino)
+    # # print(bino)
 
-    def count(num, n):
-        c = 0
-        for i in bino:
-            if num == i: c += 1
+    # def count(num, n):
+    #     c = 0
+    #     for i in bino:
+    #         if num == i: c += 1
         
-        return c / float(n)
+    #     return c / float(n)
 
-    distribution = [count(i, 40) for i in range(41)]
-    print(distribution)
-    plt.plot(distribution, 'ro')
-    plt.show()
+    # distribution = [count(i, 40) for i in range(41)]
+    # print(distribution)
+    # plt.plot(distribution, 'ro')
+    # plt.show()
