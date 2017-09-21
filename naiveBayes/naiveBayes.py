@@ -1,7 +1,9 @@
-import numpy as np
-import matplotlib.pyplot as plt
 import re
+
 import feedparser
+import matplotlib.pyplot as plt
+import numpy as np
+
 
 def loadDataSet():
 	postingList=[['my', 'dog', 'has', 'flea', 'problems', 'help', 'please'],
@@ -25,7 +27,7 @@ def setOfWords2Vec(vocabList, inputSet):
 	for word in inputSet:
 		if word in vocabList:
 			returnVec[vocabList.index(word)] = 1
-		else: print("the word: %s is not in my Vocabulary!" % word)
+		# else: print("the word: %s is not in my Vocabulary!" % word)
 	return returnVec
 
 # train the classifier with trainMatrix and its trainCategory
@@ -83,7 +85,7 @@ def testingNB():
 
 	testEntry = ['stupid', 'garbage']
 	thisDoc = np.array(setOfWords2Vec(vocabList, testEntry))
-	print(testEntry, 'classified as: ', classifyNB(thisDoc, p0V, p1V, pAb))	
+	print(testEntry, 'classified as: ', classifyNB(thisDoc, p0V, p1V, pAb))
 
 # 词袋模型，某些词出现不止一次可能会表达更多的信息
 def bagOfWords2VecMN(vocabList, inputSet):
@@ -195,7 +197,8 @@ def localWords(feed1, feed0):
 	# print(top30Words)
 
 	for pairW in top30Words:
-		if pairW[0] in vocabList: vocabList.remove(pairW[0])
+		if pairW[0] in vocabList:
+			vocabList.remove(pairW[0])
 
 	trainingSet = list(range(2*minLen)) ; testSet = []
 
@@ -221,6 +224,25 @@ def localWords(feed1, feed0):
 		
 		print('the %dth doc classified as: %d, and its real class is: %d' % (docIndex, preRes, classList[docIndex]))	
 	print('the error rate is: ', error/float(count))
+	return vocabList, p0V, p1V
+
+def getTopWords(ny, sf):
+	import operator
+	vocabList, p0V, p1V = localWords(ny, sf)
+	topNY = [] ; topSF = []
+
+	for i in range(len(p0V)):
+		if p0V[i] > -6.0: topSF.append((vocabList[i], p0V[i]))
+		if p1V[i] > -6.0: topNY.append((vocabList[i], p1V[i]))
+	sortedSF = sorted(topSF, key=lambda pair: pair[1], reverse=True)
+	print('SF**SF**SF**SF**SF**SF**SF**SF**SF**SF**SF**SF**SF')
+	for item in sortedSF:
+		print(item[0])
+
+	sortedNY = sorted(topNY, key=lambda pair: pair[1], reverse=True)
+	print('NY**NY**NY**NY**NY**NY**NY**NY**NY**NY**NY**NY**NY')
+	for item in sortedNY:
+		print(item[0])
 
 def main():
 	# testingNB()
@@ -228,7 +250,8 @@ def main():
 	ny = feedparser.parse('https://newyork.craigslist.org/search/stp?format=rss')
 	sf = feedparser.parse('https://sfbay.craigslist.org/search/stp?format=rss')
 
-	localWords(ny, sf)
+	# localWords(ny, sf)
+	getTopWords(ny, sf)
 
 if __name__ == '__main__':
 	main()
