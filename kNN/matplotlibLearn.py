@@ -1,6 +1,6 @@
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
-import numpy as np
+# import matplotlib.pyplot as plt
+# import matplotlib.image as mpimg
+# import numpy as np
 
 # plt.plot([2, 3, 4, 5], [4, 5, 6, 7], 'r-')
 # # axis([xmin,xmax,ymin,ymax]) 限制坐标轴
@@ -90,11 +90,11 @@ import numpy as np
 
 # plt.show()
 
-from scipy import misc
-def rgb2gray(rgb):
-	return np.dot(rgb[..., :3], [0.299, 0.587, 0.114])
+# from scipy import misc
+# def rgb2gray(rgb):
+# 	return np.dot(rgb[..., :3], [0.299, 0.587, 0.114])
 
-seven = mpimg.imread('seven.jpg')
+# seven = mpimg.imread('seven.jpg')
 # plt.axis('off')
 
 # plt.imshow(seven)
@@ -112,26 +112,129 @@ seven = mpimg.imread('seven.jpg')
 # ax.axis([0.0, 32.0, 0.0, 32.0])
 
 
-seven_32 = mpimg.imread('seven_32.jpg')
+# seven_32 = mpimg.imread('seven_32.jpg')
 # plt.imshow(seven_32)
 # plt.show()
 
-figure = plt.figure()
-ax = figure.add_subplot(111)
-ax.axis([0, 32, 0, 32])
+# figure = plt.figure()
+# ax = figure.add_subplot(111)
+# ax.axis([0, 32, 0, 32])
 
-c = 0
+# c = 0
 
-for i in range(32):
-	for j in range(32):
-		if sum(seven_32[i, j, :]) <= 750:
-			c += 1
-			# print(sum(seven_32[i, j, :]))
-			# print(seven_32[i, j, :])
-			print(i, j)
-			ax.plot(j, 32 - i, 'ro')
-		else:
-			ax.plot(j, 32 - i, 'ko')
+# for i in range(32):
+# 	for j in range(32):
+# 		if sum(seven_32[i, j, :]) <= 750:
+# 			c += 1
+# 			# print(sum(seven_32[i, j, :]))
+# 			# print(seven_32[i, j, :])
+# 			print(i, j)
+# 			ax.plot(j, 32 - i, 'ro')
+# 		else:
+# 			ax.plot(j, 32 - i, 'ko')
 
-print('totla %d' % c)
+# print('totla %d' % c)
+# plt.show()
+
+# import numpy as np
+# import matplotlib.pyplot as plt
+
+# mu, sigma = 100, 15
+# x = mu + sigma * np.random.randn(10000)
+
+# # 数据的直方图
+# n, bins, patches = plt.hist(x, 50, normed=1, facecolor='g', alpha=0.75)
+
+
+# plt.xlabel('智商')
+# plt.ylabel('概率')
+# plt.title('智商分布直方图')
+# plt.text(60, .025, r'$\mu=100,\ \sigma=15 \sigma_i=233$')
+# plt.axis([40, 160, 0, 0.03])
+# plt.grid(True)
+# plt.show()
+
+# import numpy as np
+# import matplotlib.pyplot as plt
+
+# y = np.random.normal(loc=0.5, scale=0.4, size=1000)
+# y = y[(y > 0) & (y < 1)]
+# y.sort()
+
+# x = np.arange(len(y))
+
+# figure = plt.figure(1)
+
+# # 直线
+# plt.subplot(221)
+# plt.plot(x, y)
+# plt.yscale('linear')
+# plt.title('linear')
+# plt.grid(True)
+
+# # 对数
+# plt.subplot(222)
+# plt.plot(x, y)
+# plt.yscale('log')
+# plt.title('log')
+# plt.grid(True)
+
+# # 对称的对数
+# plt.subplot(223)
+# plt.plot(x, y - y.mean())
+# plt.yscale('symlog', linthreshy=0.05)
+# plt.title('symlog')
+# plt.grid(True)
+
+# # logit
+# plt.subplot(224)
+# plt.plot(x, y)
+# plt.yscale('logit')
+# plt.title('logit')
+# plt.grid(True)
+
+# plt.show()
+
+# import matplotlib.pyplot as plt
+# import matplotlib.image as mpimg
+# import numpy as np
+
+# img = mpimg.imread('kNN/stinkbug.png')
+# # img = plt.imread('kNN/stinkbug.png')
+# img = img[:, :, 0]
+
+# plt.imshow(img, cmap='hot')
+# imgplot = plt.imshow(img)
+# imgplot.set_cmap('spectral')
+
+# plt.imshow(img, cmap='hot')
+# plt.colorbar()
+# plt.waitforbuttonpress()
+
+# plt.hist(img.ravel(), bins=256, range=(0., 1.), fc='k', ec='k')
+# plt.title('图像色彩直方图')
+# plt.colorbar()
+# plt.show()
+
+# plt.subplot(121)
+# plt.imshow(img)
+# plt.colorbar()
+
+# plt.subplot(122)
+# plt.imshow(img, clim=(0., 0.7))
+# plt.colorbar()
+
+# plt.show()
+
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+
+import numpy as np
+from PIL import Image
+
+img = Image.open('kNN/stinkbug.png')
+img.thumbnail((64, 64), Image.ANTIALIAS) # result image in-place
+
+# plt.imshow(img, interpolation='nearest')
+plt.imshow(img, interpolation='bicubic')
 plt.show()
